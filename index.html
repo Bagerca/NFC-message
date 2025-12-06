@@ -2,210 +2,296 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wuthering Love</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WuWa Resonance</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --gold-primary: #f2e3b6;
+            --gold-secondary: #d4c38d;
+            --gold-glow: rgba(212, 195, 141, 0.6);
+            --dark-bg: #0b0c10;
+            --glass-bg: rgba(20, 20, 25, 0.65);
+        }
 
         body {
             margin: 0;
             padding: 0;
-            background-color: #08090d; /* Тёмный фон игры */
+            background-color: var(--dark-bg);
             color: white;
             font-family: 'Rajdhani', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
             overflow: hidden;
-            background-image: radial-gradient(circle at center, #1a1c24 0%, #000000 100%);
-        }
-
-        /* Анимация появления */
-        .container {
-            text-align: center;
-            opacity: 0;
-            animation: fadeIn 2s forwards;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        /* Декоративные линии как в UI игры */
-        .tech-line {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-            margin: 20px 0;
-            width: 100%;
-        }
-
-        .header-icon {
-            width: 60px;
-            height: 60px;
-            border: 2px solid #d4c38d; /* Золотой цвет */
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 0 15px rgba(212, 195, 141, 0.4);
+            perspective: 1000px;
         }
 
-        .header-icon span {
-            font-size: 30px;
+        /* Фоновый шум (Film Grain) для кинематографичности */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
         }
 
-        h1 {
-            font-family: 'Orbitron', sans-serif;
+        /* Динамический фон */
+        .background-glow {
+            position: absolute;
+            width: 150vw;
+            height: 150vw;
+            background: radial-gradient(circle, rgba(212, 195, 141, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulseBg 6s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        /* Золотые частицы */
+        .particles span {
+            position: absolute;
+            bottom: -10px;
+            width: 2px;
+            height: 2px;
+            background: var(--gold-primary);
+            box-shadow: 0 0 10px var(--gold-primary);
+            border-radius: 50%;
+            animation: rise 5s infinite linear;
+            opacity: 0;
+        }
+        .particles span:nth-child(1) { left: 10%; animation-duration: 4s; animation-delay: 0s; }
+        .particles span:nth-child(2) { left: 30%; animation-duration: 7s; animation-delay: 2s; }
+        .particles span:nth-child(3) { left: 70%; animation-duration: 5s; animation-delay: 1s; }
+        .particles span:nth-child(4) { left: 90%; animation-duration: 6s; animation-delay: 3s; }
+
+        /* Контейнер карточки */
+        .card-container {
+            position: relative;
+            z-index: 10;
+            width: 85%;
+            max-width: 380px;
+            opacity: 0;
+            transform: scale(0.9) translateY(30px);
+            animation: cardAppear 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0.5s;
+        }
+
+        /* Эффект матового стекла (Premium) */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid var(--gold-secondary);
+            border-radius: 2px; /* Угловатость как в игре */
+            padding: 2px; /* Для двойной рамки */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(212, 195, 141, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Декоративные углы */
+        .corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid var(--gold-secondary);
+            transition: all 0.5s ease;
+        }
+        .top-left { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .top-right { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+        .bottom-left { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+        .bottom-right { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+        /* Внутренний контент */
+        .card-content {
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.2) 100%);
+        }
+
+        /* Звезды редкости */
+        .stars {
+            color: var(--gold-primary);
             font-size: 24px;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--gold-secondary);
+        }
+
+        /* Заголовок */
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            background: linear-gradient(to right, #fff, #f2e3b6, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            filter: drop-shadow(0 0 5px rgba(242, 227, 182, 0.5));
         }
 
         .subtitle {
             font-size: 14px;
-            color: #8faec5; /* Техно-голубой */
-            letter-spacing: 1px;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
             margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            display: inline-block;
         }
 
-        /* Карточка с посланием */
-        .message-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 4px;
-            position: relative;
-            backdrop-filter: blur(5px);
-        }
-
-        /* Золотая рамка (как 5 звезд) */
-        .message-card.legendary {
-            border: 1px solid #d4c38d;
-            box-shadow: 0 0 20px rgba(212, 195, 141, 0.2);
-        }
-
-        .main-text {
-            font-size: 28px;
-            font-weight: 600;
-            background: linear-gradient(to right, #fff, #d4c38d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-        }
-
-        .description {
+        .message {
             font-size: 16px;
-            line-height: 1.5;
-            color: #ccc;
-        }
-
-        /* Статы */
-        .stats {
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .stat-box {
-            text-align: center;
-        }
-        
-        .stat-value {
-            display: block;
-            font-size: 18px;
-            color: #d4c38d;
-            font-weight: bold;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+            font-weight: 300;
         }
 
         /* Кнопка */
-        .btn {
-            margin-top: 30px;
+        .action-btn {
             background: transparent;
-            border: 1px solid #fff;
-            color: white;
-            padding: 10px 30px;
+            border: 1px solid var(--gold-secondary);
+            color: var(--gold-secondary);
+            padding: 12px 40px;
             font-family: 'Rajdhani', sans-serif;
             font-size: 18px;
-            cursor: pointer;
-            transition: 0.3s;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
+            cursor: pointer;
             position: relative;
             overflow: hidden;
+            transition: all 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
         }
 
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #d4c38d;
-            color: #d4c38d;
+        .action-btn:hover {
+            background: var(--gold-secondary);
+            color: #000;
+            box-shadow: 0 0 20px var(--gold-secondary);
         }
 
-        /* Глитч эффект на фоне (опционально) */
-        .bg-particles {
-            position: absolute;
+        /* Вспышка при открытии */
+        .flash {
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 100;
+            animation: flashFade 1.5s ease-out forwards;
             pointer-events: none;
-            z-index: -1;
-            background-image: 
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.7; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+        }
+
+        @keyframes rise {
+            0% { bottom: -10px; opacity: 0; transform: translateY(0); }
+            50% { opacity: 1; }
+            100% { bottom: 100vh; opacity: 0; transform: translateY(-100px); }
+        }
+
+        @keyframes cardAppear {
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes flashFade {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Аудио-волны (декор) */
+        .wave-lines {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            height: 30px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .bar {
+            width: 2px;
+            background: var(--gold-secondary);
+            animation: wave 1s infinite ease-in-out;
+        }
+        .bar:nth-child(odd) { animation-duration: 1.2s; }
+        .bar:nth-child(even) { animation-duration: 0.8s; }
+
+        @keyframes wave {
+            0%, 100% { height: 5px; opacity: 0.3; }
+            50% { height: 25px; opacity: 1; box-shadow: 0 0 8px var(--gold-secondary); }
         }
 
     </style>
 </head>
 <body>
 
-    <div class="bg-particles"></div>
-
-    <div class="container">
-        <!-- Иконка сверху -->
-        <div class="header-icon">
-            <span>✦</span>
-        </div>
-
-        <h1>Резонанс Обнаружен</h1>
-        <div class="subtitle">СИНХРОНИЗАЦИЯ: 100%</div>
-
-        <div class="tech-line"></div>
-
-        <!-- Карточка -->
-        <div class="message-card legendary">
-            <div class="main-text">Я ТЕБЯ ЛЮБЛЮ</div>
-            <div class="description">
-                Ты — мой самый редкий дроп в этой вселенной.<br>
-                Никакие Эхо не звучат так громко, как мое сердце рядом с тобой.
-            </div>
-
-            <!-- Имитация статов -->
-            <div class="stats">
-                <div class="stat-box">
-                    <span class="stat-value">LVL ∞</span>
-                    <span>Уровень чувств</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-value">MAX</span>
-                    <span>Единство</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-value">5 ★</span>
-                    <span>Редкость</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Кнопка действия -->
-        <button class="btn" onclick="alert('Обнять крепко-крепко!')">Принять</button>
+    <div class="flash"></div>
+    <div class="noise-overlay"></div>
+    <div class="background-glow"></div>
+    
+    <div class="particles">
+        <span></span><span></span><span></span><span></span>
     </div>
 
+    <div class="card-container">
+        <div class="glass-card">
+            <!-- Декоративные углы -->
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+
+            <div class="card-content">
+                <!-- Вейвформ (звуковая волна как в игре) -->
+                <div class="wave-lines">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+
+                <div class="stars">★★★★★</div>
+                
+                <h1>Я Люблю Тебя</h1>
+                <div class="subtitle">Resonance awakened</div>
+
+                <div class="message">
+                    В этом мире хаоса и диссонансов<br>
+                    ты — моя единственная константа.<br><br>
+                    <span style="color: #d4c38d; font-size: 0.9em;">UID: FOREVER-YOURS</span>
+                </div>
+
+                <button class="action-btn" onclick="openGift()">
+                    Принять в отряд
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openGift() {
+            // Эффект нажатия
+            const btn = document.querySelector('.action-btn');
+            btn.innerHTML = "СИНХРОНИЗАЦИЯ...";
+            btn.style.letterSpacing = "4px";
+            
+            setTimeout(() => {
+                alert("Ты лучше любой легендарки! ❤");
+                // Здесь можно перенаправить на фото или плейлист
+                // window.location.href = "ССЫЛКА_НА_ФОТО"; 
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
